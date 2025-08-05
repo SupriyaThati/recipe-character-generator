@@ -33,8 +33,7 @@ HUGGINGFACE_API_KEY = os.getenv("HUGGINGFACE_API_KEY")
 if not HUGGINGFACE_API_KEY:
     raise ValueError("HUGGINGFACE_API_KEY environment variable is not set. Please set it in a .env file or your environment.")
 
-HUGGINGFACE_API_URL = "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-2"
-
+HUGGINGFACE_API_URL = "https://api-inference.huggingface.co/models/CompVis/stable-diffusion-v1-4"
 
 # Function to sanitize prompts
 def sanitize_prompt(prompt):
