@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Recipe & Character Generator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Give+You+Glory&family=Poiret+One&family=Boldonse&family=Racing+Sans+One&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+      transition: all 0.3s ease;
+    }
+
+    body {
+      margin: 0;
+      background: #f3f4ed;
+      color: #333;
+    }
+
+    header {
+      background: #a0bcae;
+      color: #fff;
+      padding: 1.5rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0px 4px 8px rgba(0,0,0,0.1);
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 2rem;
+      font-family: 'Give You Glory', cursive;
+    }
+
+    nav button {
+      background: #b8c9b9;
+      color: #333;
+      border: none;
+      padding: 0.8rem 1.5rem;
+      margin-left: 1.5rem;
+      border-radius: 50px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.3s;
+      font-family: 'Racing Sans One', sans-serif;
+    }
+
+    nav button:hover {
+      background: #8a9e8f;
+    }
+
+    .hero {
+      background-image: url('https://images.unsplash.com/photo-1504674900247-0877df9cc836');
+      background-size: cover;
+      background-position: center;
+      height: 350px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+      font-size: 2.5rem;
+      font-weight: bold;
+      text-align: center;
+      padding: 0 1rem;
+      opacity: 0.7;
+    }
+
+    .hero img {
+      display: none;
+    }
+
+    .hero h2 {
+      font-family: 'Give You Glory', cursive;
+      font-size: 3rem;
+    }
+
+    .container {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 2rem;
+      padding: 2rem;
+    }
+
+    .section {
+      background: white;
+      padding: 2rem;
+      border-radius: 1.5rem;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+      transition: transform 0.3s ease;
+    }
+
+    .section:hover {
+      transform: translateY(-5px);
+    }
+
+    .cuisine-type, .subsection-labels {
+      font-family: 'Boldonse', sans-serif;
+    }
+
+    label {
+      display: block;
+      margin-top: 1rem;
+      font-weight: 500;
+      font-size: 1rem;
+      color: #6e6e6e;
+      font-family: 'Give You Glory', cursive;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      padding: 0.8rem;
+      margin-top: 0.5rem;
+      border-radius: 10px;
+      border: 1px solid #e2e2e2;
+      font-size: 1rem;
+      background: #fafafa;
+      font-family: 'Give You Glory', cursive;
+    }
+
+    button.generate {
+      background: #82b08e;
+      color: white;
+      margin-top: 1.5rem;
+      padding: 0.8rem 1.8rem;
+      border: none;
+      border-radius: 50px;
+      font-weight: bold;
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: background 0.3s;
+      font-family: 'Poiret One', cursive;
+    }
+
+    button.generate:hover {
+      background: #4a6f55;
+    }
+
+    .output {
+      margin-top: 2rem;
+      animation: fadeIn 1s ease;
+    }
+
+    .output img {
+      max-width: 100%;
+      border-radius: 1rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      margin-top: 1rem;
+    }
+
+    footer {
+      background: #a0bcae;
+      color: #fff;
+      text-align: center;
+      padding: 1.2rem;
+      margin-top: 3rem;
+      font-size: 1rem;
+    }
+
+    @media (min-width: 768px) {
+      .container {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+
+    .loading {
+      color: #82b08e;
+      font-style: italic;
+      margin-bottom: 16px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Plates and Portraits</h1>
+    <nav>
+      <button onclick="switchTab('recipe')">Recipe Generator</button>
+      <button onclick="switchTab('character')">Character Generator</button>
+    </nav>
+  </header>
+
+  <div class="hero">
+    <h2>Creative Cooking & Smart Characters</h2>
+  </div>
+
+  <main class="container">
+    <section class="section" id="recipe-section">
+      <h2 style="font-family: 'Give You Glory', cursive;">🍲 Generate a Recipe</h2>
+      <label class="cuisine-type">Cuisine Type</label>
+      <input type="text" id="cuisine" placeholder="e.g., Indian, Italian">
+
+      <label class="subsection-labels">Ingredients</label>
+      <textarea id="ingredients" rows="3" placeholder="Enter ingredients separated by commas"></textarea>
+
+      <label class="subsection-labels">Serving Capacity</label>
+      <input type="number" id="capacity" placeholder="e.g., 4">
+
+      <button class="generate" onclick="generateRecipe()">Generate Recipe</button>
+      <button class="generate" onclick="generateImage('recipe')">Generate Recipe Image</button>
+
+      <div class="output" id="recipe-output"></div>
+    </section>
+
+    <section class="section" id="character-section" style="display:none;">
+      <h2 style="font-family: 'Give You Glory', cursive;">🎨 Generate Educational Character</h2>
+      <label class="subsection-labels">Character Description</label>
+      <textarea id="description" rows="4" placeholder="e.g., Marie Curie in a lab"></textarea>
+
+      <button class="generate" onclick="generateCharacter()">Generate Character</button>
+      <button class="generate" onclick="generateImage('character')">Generate Character Image</button>
+
+      <div class="output" id="character-output"></div>
+    </section>
+  </main>
+
+  <footer>
+    © 2025 タルン と スプリヤ.
+  </footer>
+  
+  <script>
+    function switchTab(tab) {
+      document.getElementById('recipe-section').style.display = tab === 'recipe' ? 'block' : 'none';
+      document.getElementById('character-section').style.display = tab === 'character' ? 'block' : 'none';
+    }
+  
+    async function generateRecipe() {
+      const cuisine = document.getElementById('cuisine').value.trim();
+      const ingredients = document.getElementById('ingredients').value.trim();
+      const capacity = document.getElementById('capacity').value.trim();
+      const output = document.getElementById('recipe-output');
+  
+      // Show loading state
+      output.innerHTML = '<p class="loading">Generating recipe...</p>';
+  
+      try {
+        const res = await fetch('http://localhost:5000/generate_recipe', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ cuisine, ingredients, capacity })
+        });
+        const data = await res.json();
+  
+        if (data.error) {
+          output.innerHTML = `<p style="color: red; margin-bottom: 16px;">${data.error}</p>`;
+          return;
+        }
+  
+        const ingredientsHtml = data.ingredients.map(item => `<li style="margin-bottom: 8px;">${item}</li>`).join('');
+        const instructionsHtml = data.instructions.map(item => `<li style="margin-bottom: 8px;">${item}</li>`).join('');
+        output.innerHTML = `
+          <h3 style="margin-bottom: 16px; font-size: 1.5em;">${data.name}</h3>
+          <p style="font-weight: bold; margin-bottom: 8px; font-size: 1.1em;">Ingredients:</p>
+          <ul style="margin-bottom: 16px; padding-left: 20px;">${ingredientsHtml}</ul>
+          <p style="font-weight: bold; margin-bottom: 8px; font-size: 1.1em;">Instructions:</p>
+          <ol style="margin-bottom: 16px; padding-left: 20px;">${instructionsHtml}</ol>
+          ${data.image ? `<img src="data:image/png;base64,${data.image}" alt="Recipe Image" style="max-width: 100%; border-radius: 1rem; margin-top: 16px;">` : ''}
+        `;
+      } catch (error) {
+        output.innerHTML = `<p style="color: red; margin-bottom: 16px;">Failed to generate recipe: ${error.message}</p>`;
+      }
+    }
+  
+    async function generateCharacter() {
+      const description = document.getElementById('description').value.trim();
+      const output = document.getElementById('character-output');
+  
+      // Show loading state
+      output.innerHTML = '<p class="loading">Generating character...</p>';
+  
+      try {
+        const res = await fetch('http://localhost:5000/generate_character', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ description })
+        });
+        const data = await res.json();
+  
+        if (data.error) {
+          output.innerHTML = `<p style="color: red; margin-bottom: 16px;">${data.error}</p>`;
+          return;
+        }
+  
+        const storyHtml = data.story.map(item => `<li style="margin-bottom: 8px;">${item}</li>`).join('');
+        output.innerHTML = `
+          <h3 style="margin-bottom: 16px; font-size: 1.5em;">${data.name}</h3>
+          <p style="font-weight: bold; margin-bottom: 8px; font-size: 1.1em;">Story:</p>
+          <ul style="margin-bottom: 16px; padding-left: 20px;">${storyHtml}</ul>
+          ${data.image ? `<img src="data:image/png;base64,${data.image}" alt="Character Image" style="max-width: 100%; border-radius: 1rem; margin-top: 16px;">` : ''}
+        `;
+      } catch (error) {
+        output.innerHTML = `<p style="color: red; margin-bottom: 16px;">Failed to generate character: ${error.message}</p>`;
+      }
+    }
+  
+    async function generateImage(type) {
+      const outputId = type === 'recipe' ? 'recipe-output' : 'character-output';
+      const output = document.getElementById(outputId);
+      let payload = {};
+  
+      // Show loading state
+      output.innerHTML = `<p class="loading">Generating ${type} image...</p>` + output.innerHTML;
+  
+      if (type === 'recipe') {
+        payload = {
+          cuisine: document.getElementById('cuisine').value.trim(),
+          ingredients: document.getElementById('ingredients').value.trim()
+        };
+      } else {
+        payload = {
+          description: document.getElementById('description').value.trim()
+        };
+      }
+  
+      try {
+        const res = await fetch(`http://localhost:5000/generate_${type}_image`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+  
+        if (data.error) {
+          output.innerHTML = `<p style="color: red; margin-bottom: 16px;">${data.error}</p>` + output.innerHTML;
+          return;
+        }
+  
+        output.innerHTML = `
+          <h4 style="margin-bottom: 8px; font-size: 1.2em;">Generated Image</h4>
+          <img src="data:image/png;base64,${data.image}" alt="Generated Image" style="max-width: 100%; border-radius: 1rem; margin-top: 8px;">
+        ` + output.innerHTML;
+      } catch (error) {
+        output.innerHTML = `<p style="color: red; margin-bottom: 16px;">Failed to generate image: ${error.message}</p>` + output.innerHTML;
+      }
+    }
+  </script>
+</body>
+</html>
