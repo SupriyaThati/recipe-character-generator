@@ -6,4 +6,4 @@ openai==1.7.7
 python-dotenv==1.0.1
 gunicorn==23.0.0
 tenacity==8.2.3
-Jinja2==3.1.5s
+Jinja2==3.1.5
