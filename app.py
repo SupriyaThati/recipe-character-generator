@@ -34,10 +34,8 @@ HUGGINGFACE_API_KEY = os.getenv("HUGGINGFACE_API_KEY")
 if not HUGGINGFACE_API_KEY:
     raise ValueError("HUGGINGFACE_API_KEY environment variable is not set. Please set it in a .env file or your environment.")
 
-# --- FINAL FIXED CODE ---
-# Use a model that is available on the free public Inference API.
-# stabilityai/stable-diffusion-2-1 is a good choice.
-HUGGINGFACE_API_URL = "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-2-1"
+
+HUGGINGFACE_API_URL = "https://api-inference.huggingface.co/models/black-forest-labs/FLUX.1-schnell"
 
 
 # Function to sanitize prompts
