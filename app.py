@@ -34,7 +34,11 @@ HUGGINGFACE_API_KEY = os.getenv("HUGGINGFACE_API_KEY")
 if not HUGGINGFACE_API_KEY:
     raise ValueError("HUGGINGFACE_API_KEY environment variable is not set. Please set it in a .env file or your environment.")
 
-HUGGINGFACE_API_URL = "https://huggingface.co/CompVis/stable-diffusion-v1-4"
+# --- FINAL FIXED CODE ---
+# Use a model that is available on the free public Inference API.
+# stabilityai/stable-diffusion-2-1 is a good choice.
+HUGGINGFACE_API_URL = "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-2-1"
+
 
 # Function to sanitize prompts
 def sanitize_prompt(prompt):
@@ -237,11 +241,18 @@ def generate_recipe_image():
         print(f"Hugging Face API response headers: {response.headers}")
 
         if response.status_code != 200:
-            return jsonify({"error": f"Hugging Face API error: {response.text}"}), 500
+            error_message = response.text or "Unknown error from Hugging Face API"
+            return jsonify({"error": f"Hugging Face API error: {error_message}"}), 500
 
         content_type = response.headers.get("content-type", "")
         if "image" not in content_type:
-            return jsonify({"error": f"Unexpected response: {response.text}"}), 500
+            try:
+                error_data = response.json()
+                error_message = error_data.get("error", "An error occurred during image generation.")
+            except json.JSONDecodeError:
+                error_message = response.text
+
+            return jsonify({"error": f"Unexpected response from Hugging Face API: {error_message}"}), 500
 
         image_base64 = base64.b64encode(response.content).decode('utf-8')
         return jsonify({"image": image_base64})
@@ -269,11 +280,18 @@ def generate_character_image():
         print(f"Hugging Face API response headers: {response.headers}")
 
         if response.status_code != 200:
-            return jsonify({"error": f"Hugging Face API error: {response.text}"}), 500
+            error_message = response.text or "Unknown error from Hugging Face API"
+            return jsonify({"error": f"Hugging Face API error: {error_message}"}), 500
 
         content_type = response.headers.get("content-type", "")
         if "image" not in content_type:
-            return jsonify({"error": f"Unexpected response: {response.text}"}), 500
+            try:
+                error_data = response.json()
+                error_message = error_data.get("error", "An error occurred during image generation.")
+            except json.JSONDecodeError:
+                error_message = response.text
+                
+            return jsonify({"error": f"Unexpected response from Hugging Face API: {error_message}"}), 500
 
         image_base64 = base64.b64encode(response.content).decode('utf-8')
         return jsonify({"image": image_base64})
@@ -288,4 +306,6 @@ def health_check():
     return 'ok', 200
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    # Use a dynamic port for production environments like Render
+    port = int(os.environ.get('PORT', 5000))
+    app.run(debug=True, host='0.0.0.0', port=port)
